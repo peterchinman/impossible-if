@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+Bedroom
+{% endblock %}
+
+{% block main %}
+<h1><a href="/room/bedroom" class="place">Bedroom</a></h1>
+<div id="description">
+   <p>You are in your bedroom, standing at the foot of your <a href="{{ url_for('object', item='bed', state=encoded_state) }}"
+   hx-get="{{ url_for('object', item='bed', state=encoded_state) }}"
+   hx-target="#interaction" class="object">bed</a>.</p>
+   
+   <p>Beside the bed is a <a href="/objects/bed-side-table" class="object">bed-side table</a>. On the bed-side table there is:
+      <a href="/objects/tarot-cards" class="object">a deck of tarot cards</a>,
+      <a href="/objects/lamp" class="object">a lamp</a>,
+      <a href="/objects/mouth-guard" class="object">a mouth-guard</a>.
+   </p>
+   
+   <p>To your left are a set of
+   {% if state.sliding_door.open == true %}
+      open <a href="/objects/sliding-doors" class="object">sliding doors</a>, thru which you can see <a href="/room/living-room" class="place">the living room</a>.
+   {% endif %}
+   {% if state.sliding_door.open == false %}
+      closed <a href="/objects/sliding-doors" class="object">sliding doors</a>.
+   {% endif %}
+   {% if objects.sliding_door.painted_shut == true %}
+      The doors seem to have once slid open and closed on a metal track, but your landlord has slathered so many layers of white paint over them that they are now, permanently, open.
+   {% endif %}
+   </p>
+   
+   <p>
+   To your right is a small doorway to the <a href="/room/kitchen" class="place">kitchen</a>.
+   </p>
+</div>
+<div id="interaction">
+</div>
+
+
+
+{% endblock %}

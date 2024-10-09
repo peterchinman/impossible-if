@@ -1,0 +1,77 @@
+@import 'reset.css';
+@import 'setup.css';
+
+:root {
+	--neutral-0: 		#FFFFFF;
+	--neutral-20:		#FAFAFA;
+	--neutral-30:		#F7F7F7;
+	--neutral-50:		#F2F2F2;
+	--neutral-100:		#E5E5E5;
+	--neutral-200: 	    #CCCCCC;
+	--neutral-300: 	    #B2B2B2;
+	--neutral-400: 	    #999999;
+	--neutral-500:		#808080;
+	--neutral-600:		#666666;
+	--neutral-700:		#4D4D4D;
+	--neutral-800:		#333333;
+	--neutral-900:		#1A1A1A;
+	--neutral-1000:	    #000000;
+    
+}
+
+main {
+	padding: 1rem;
+}
+
+inner-column {
+	max-width: 600px;
+	margin-inline: auto;
+}
+
+.object-list {
+	display: inline;
+
+	li {
+		display: inline;
+	}
+}
+
+#interaction {
+	display: none;
+	border: 1px solid black;
+	padding: 1rem;
+	margin-top: 2rem;
+}
+
+#interaction:has(> *) {
+	display: block
+}
+
+.object-actions {
+	text-transform: capitalize;
+}
+
+/* TYPOGRAPHY */
+
+h1 {
+	font-size: 3rem;
+	padding-bottom: 2rem;
+}
+h2 {
+	font-size: 2rem;
+	padding-bottom: 1rem;
+}
+p, ul {
+	line-height: 1.7;
+}
+p + p, p + ul, p + ol {
+	padding-top: .7rem;
+}
+
+p a, li a {
+	display: inline-block;
+	/* padding: 0px 4px; */
+	/* text-decoration: none; */
+	/* background-color: var(--neutral-50); */
+}
+

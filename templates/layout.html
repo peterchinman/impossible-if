@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+
+    <link href="/static/favicon.ico" rel="icon">
+
+    <link href="/static/styles.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/htmx.org@2.0.2" integrity="sha384-Y7hw+L/jvKeWIRRkqWYfPcvVxHzVzn5REgzbawhxAuQGwX1XWe70vji+VSeHOThJ" crossorigin="anonymous"></script>
+
+
+    <title>{% block title %}{% endblock %}</title>
+
+</head>
+
+<body>
+
+<header>
+    <inner-column>
+        <nav class="site-menu">
+        
+        </nav>
+    </inner-column>
+</header>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flash">
+        {% for category, message in messages %}
+            <li class=" {{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endwith %}
+
+
+<main class="{% block main_class %}{% endblock %}" hx-boost="true">
+    <inner-column>{% block main %}{% endblock %}</inner-column>
+</main>
+
+<footer>
+<inner-column>
+
+</inner-column>
+</footer>
+    
+
+</body>
+
+</html>

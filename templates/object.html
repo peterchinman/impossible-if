@@ -1,0 +1,25 @@
+<h2>{{ object.name }}</h2>
+<p class="description">{{ object.description }}</p>
+{# TODO MAKE THIS WORK #}
+{% for key, value in object.possible_states.items() %}
+<p class="state">{{ value[state[object.slug][key]] }}</p>
+{% endfor %}
+{% if object.actions %}
+<ul class="object-actions">
+   {% for action_name, action_values in object['actions'].items() %}
+      {% set requirement_missing = namespace(flag = false) %}
+      {% if 'requires' in action_values %}
+         {% for require_object, requirements in action_values['requires'].items() %}
+            {% for requirement_key, requirement_value in requirements.items() %}
+               {% if not state.get(require_object).get(requirement_key) == requirement_value %}
+                  {% set requirement_missing.flag = true %}
+               {% endif %}
+            {% endfor %}
+         {% endfor %}
+      {% endif %}
+      {% if not requirement_missing.flag %}
+         <li><a href="/objects/{{ object.slug }}/{{ action_values.slug }}" hx-get="/objects/{{ object.slug }}/{{ action_values.slug }}" hx-target="#interaction" class="action">{{ action_name }}</a></li>
+      {% endif %}
+   {% endfor %}
+</ul>
+{% endif %}
