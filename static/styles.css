@@ -36,14 +36,14 @@ inner-column {
 	}
 }
 
-#interaction {
+#inspect, #action {
 	display: none;
 	border: 1px solid black;
 	padding: 1rem;
 	margin-top: 2rem;
 }
 
-#interaction:has(> *) {
+#inspect:has(> *), #action:has(> *) {
 	display: block
 }
 

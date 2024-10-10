@@ -88,7 +88,7 @@ initial_state = {
 
 objects = {
     'bed' : {
-        'name' : 'Bed',
+        'name' : 'Your bed',
         'slug' : 'bed',
         'description' : "A queen-size bed with a floral duvet. You've had the mattress for years and it is starting to sag a little in the middle.",
         'possible_states' : {
@@ -98,23 +98,35 @@ objects = {
             },
         },
         'actions' : {
-            'lay in bed' : {
-                'slug' : 'lay-in-bed',
-                'description' : "You sprawl across the bed, pulling at the pillows and duvet until you're comfortable, before getting up.",
+            'lay_in_bed' : {
+                'name' : "Lay in bed",
+                'slug' : 'lay_in_bed',
+                'description' : "You sprawl across the bed, luxuriously.",
                 'causes' : {
-                    'bed_made' : False,
-                }
+                    'bed' : {
+                        'bed_made' : False,
+                        'sleepy' : False,
+                    },
+                },
             },
-            'look underneath bed' : {
-                'slug' : 'look-underneath-bed'
+            'look_underneath_bed' : {
+                'name' : 'look underneath bed',
+                'slug' : 'look_underneath_bed'
             },
-            'make bed' : {
-                'slug' : 'make-bed',
+            'make_bed' : {
+                'name' : 'make bed',
+                'slug' : 'make_bed',
+                'description' : 'You make the bed with an air of moral superiority.',
                 'requires' : {
                     'bed' : {
                         'bed_made' : False,
                     },
                 },
+                'causes' : {
+                    'bed' : {
+                        'bed_made' : True,
+                    }
+                }
             }
         },
     
@@ -124,7 +136,7 @@ objects = {
         'slug' : 'sliding_door',
         'possible_states' : {
             'open' : {
-                True : "The doors are open. Thru them you can see <a href='/room/living-room' class='place'>.",
+                True : "The doors are open. Thru them you can see <a href='/room/living-room' class='place'>the living room</a>.",
                 False : "The doors are closed."
             },
             'painted_over' : {
@@ -162,8 +174,8 @@ def game():
     return render_template(room + '.html', objects=objects, state=state, encoded_state=encoded_state)
     
 
-@app.route("/object/<item>", methods=["GET"])
-def object(item):
+@app.route("/object/<object_slug>", methods=["GET"])
+def object(object_slug):
 
     encoded_state = request.args.get('state')
     if encoded_state:
@@ -171,8 +183,36 @@ def object(item):
     else:
         state = initial_state
 
-    specific_object = objects[item]
+    specific_object = objects[object_slug]
 
-    return render_template ("object.html", object=specific_object, state=state)
+    # TODO update state
+
+    encoded_state = encode_state(state)
+
+    return render_template ("object.html", object=specific_object, state=state, encoded_state=encoded_state)
+
+@app.route("/object/<object_slug>/<action_slug>", methods=["GET"])
+def action(object_slug, action_slug):
+
+    encoded_state = request.args.get('state')
+    if encoded_state:
+        state = decode_state(encoded_state)
+    else:
+        return render_template('error.html')
+
+    action = objects[object_slug]['actions'][action_slug]
+    object = objects[object_slug]
+
+    if 'causes' in action:
+        for object_name, state_changes in action['causes'].items():
+            for state_change_name, state_change_value in state_changes.items():
+                state[object_name][state_change_name] = state_change_value
+    
+
+            
+
+    encoded_state = encode_state(state)
+
+    return render_template("object.html", action=action, object=object, state=state, encoded_state=encoded_state)
 
 

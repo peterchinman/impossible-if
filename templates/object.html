@@ -1,6 +1,9 @@
 <h2>{{ object.name }}</h2>
+{% if action %}
+<p class="description">{{ action.description }}</p>
+{% endif %}
+
 <p class="description">{{ object.description }}</p>
-{# TODO MAKE THIS WORK #}
 {% for key, value in object.possible_states.items() %}
 <p class="state">{{ value[state[object.slug][key]] }}</p>
 {% endfor %}
@@ -18,7 +21,8 @@
          {% endfor %}
       {% endif %}
       {% if not requirement_missing.flag %}
-         <li><a href="/objects/{{ object.slug }}/{{ action_values.slug }}" hx-get="/objects/{{ object.slug }}/{{ action_values.slug }}" hx-target="#interaction" class="action">{{ action_name }}</a></li>
+         <li><a href="{{ url_for('action', action_slug=action_values.slug, object_slug=object.slug, state=encoded_state) }}"
+              hx-get="{{ url_for('action', action_slug=action_values.slug, object_slug=object.slug, state=encoded_state) }}" hx-target="#inspect" class="action">{{ action_values.name }}</a></li>
       {% endif %}
    {% endfor %}
 </ul>
