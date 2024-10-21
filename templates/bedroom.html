@@ -6,8 +6,7 @@ Bedroom
 
 {% block main %}
 <h1><a href="/room/bedroom" class="place">Bedroom</a></h1>
-{# TODO Set up hx-target / hx-get on this div so that the state can be updated when necessary #}
-{# OR MAYBE the whole <body> gets updated every time #}
+{# TODO Set up hx-oob on this div so that the state can be updated when necessary #}
 <div id="room-description">
    <p>You are in your bedroom, standing at the foot of your <a href="{{ url_for('object', object_slug='bed', state=encoded_state) }}"
    hx-get="{{ url_for('object', object_slug='bed', state=encoded_state) }}"
