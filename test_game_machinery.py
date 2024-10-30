@@ -185,18 +185,6 @@ def test_RoomObject_getStatefulDescription_4():
                      {'number_of_pillows': 3})
       assert bed.getStatefulDescription() == ["This is your bed."]
 
-def test_RoomObject_getLink():
-   with patch.dict(player.game_state, {}, clear=True):
-      bed = RoomObject("Your Bed",
-                     "This is your bed.",
-                     {'bed_made': {
-                        True: 'The bed is made.',
-                        False: 'The bed is disgusting.'
-                        }},
-                     {'number_of_pillows': 3})
-      # TODO Is this the actual link structure we want??
-      assert bed.link == "<a href='object/your-bed'>Your Bed</a>"
-
 ############################
 #   RoomObject w/ Actions      
 ############################
@@ -234,6 +222,7 @@ def test_Room_init():
                      "You are standing in your bedroom.")
       assert bedroom.description == "You are standing in your bedroom."
 
+# getDescription with RoomObject.getLink('string')
 def test_Room_getDescription():
    with patch.dict(player.game_state, {}, clear=True):
       make_bed = Action("Make Bed",
@@ -246,12 +235,34 @@ def test_Room_getDescription():
                      {},
                      [make_bed]
                      )
-      # note: to demonstrate how the names are related I have purporsefully use the name "sour_bed"
+      sliding_doors = RoomObject("Sliding Doors")
       bedroom = Room("bedroom",
-                     "You are standing at the foot of your {sour_bed.link}.",
-                     {"sour_bed": my_bed}
+                     "You are standing at the foot of {objects['my_bed'].getLink('your bed')}. To your left are {objects['sliding_doors'].getLink('a set of sliding doors')}.",
+                     {'my_bed': my_bed,'sliding_doors': sliding_doors}
                      )
-      assert bedroom.getDescription() == "You are standing at the foot of your <a href='object/your-bed'>Your Bed</a>."
+      assert bedroom.getDescription() == "You are standing at the foot of <a href='object/your-bed'>your bed</a>. To your left are <a href='object/sliding-doors'>a set of sliding doors</a>."
+
+# getDescription with RoomObject.getStateDescription('state')
+def test_Room_getDescription2():
+   with patch.dict(player.game_state, {}, clear=True):
+      my_bed = RoomObject("Your Bed",
+                     "This is your bed.",
+                     {'bed_made': {
+                        True: 'The bed is made.',
+                        False: 'The bed is disgusting.'
+                     } },
+                     {'bed_made': True})
+      bedroom = Room("bedroom",
+                     "You are standing at the foot of {objects['my_bed'].getLink('your bed')}. {objects['my_bed'].getStateDescription('bed_made')}",
+                     {'my_bed': my_bed}
+                     )
+
+      assert bedroom.getDescription() == "You are standing at the foot of <a href='object/your-bed'>your bed</a>. The bed is made."
+
+# getDescription with RoomObject.getStateDescription('state')
+def test_Room_getDescription2():
+   with patch.dict(player.game_state, {}, clear=True):
+      pass
 
 
 # move from Room to Room
@@ -268,7 +279,7 @@ def test_Room_moveToRoom():
       
       bedroom.connectRoom("east", bathroom)
 
-      player.current_room = bedroom
+      player.game_state['current_room'] = bedroom
       player.moveToRoom('east')
 
       assert player.describeRoom() == "You are in the bathroom. It is very clean."
@@ -286,7 +297,7 @@ def test_Room_moveToRoom_with_condition():
       
       bedroom.connectRoom("east", bathroom, {'inventory': {'key': True}})
 
-      player.current_room = bedroom
+      player.game_state['current_room'] = bedroom
       player.moveToRoom('east')
       assert player.getAlerts() == ["You try the handle but the door is locked."]
       assert player.describeRoom() == "You are standing in your bedroom."

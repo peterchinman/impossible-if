@@ -1,9 +1,8 @@
 from slugify import slugify
 from player import Player
+from helpers import fstr
 
 player = Player()
-
-
 
 class Action:
    """
@@ -16,7 +15,7 @@ class Action:
       Args:
          name (string): display name, e.g. "Make Bed"
 
-         description (string)(optional): Describe the action. Should probably be subjunctive. e.g. "You could tuck in all the corners, and make the bed look great."
+         description (string)(optional): Describe the result of the action. Will be shown only after action is complete.
 
          requirements(dict or list): can either be an individual dict in the form of:
                {'RoomObject_name': {
@@ -43,9 +42,24 @@ class Action:
             }
       """
       self.name = name
+      self.slug = slugify(name)
       self.description = description
       self.requirements = requirements
       self.effects = effects
+   
+   def getLink(self, string):
+      """
+      Args:
+         string (string): gets wrapped in the link
+      """
+
+      """
+      hx-get="{{ url_for('object', object_slug='sliding_door', state=encoded_state) }}"
+   hx-target="#inspect"
+      """
+      return f"""<a href='action/{self.slug}'
+                  hx-get='action/{self.slug}'
+                  hx-target='#inspect'>{string}</a>"""
 
    def _check_single_dict_of_requirement(self, requirement):
       """
@@ -99,7 +113,6 @@ class Action:
 class RoomObject:
    def __init__(self, name, description = None, state_descriptions = None, initial_states = None, Actions = None) -> None:
       self.name = name
-      
       self.description = description
       self.state_descriptions = state_descriptions
       self.initial_states = initial_states
@@ -107,7 +120,6 @@ class RoomObject:
 
 
       self.slug = slugify(name)
-      self.link = f"<a href='object/{self.slug}'>{self.name}</a>"
 
       # empty init a dict in player.game_state
       # TODO should this use self.name vs an ID??
@@ -115,6 +127,51 @@ class RoomObject:
       if self.initial_states:
          for state_name, state_value in self.initial_states.items():
             player.game_state[self.name][state_name] = state_value
+
+   def getLink(self, string):
+      """
+      Args:
+         string (string): gets wrapped in the link
+      """
+
+      """
+      hx-get="{{ url_for('object', object_slug='sliding_door', state=encoded_state) }}"
+   hx-target="#inspect"
+      """
+      return f"""<a href='/object/{self.slug}'
+                  hx-get='/object/{self.slug}'
+                  hx-target='#inspect'>{string}</a>"""
+   
+   def getStateDescription(self, state_name):
+      """
+      Retrieve the state description, if any, for a particular state.
+
+      Args:
+         state_name (string): the state_name to be queried.
+      """
+
+      if self.state_descriptions:
+         if state_name in self.state_descriptions and self.name in player.game_state and state_name in player.game_state[self.name]:
+            state_value = player.game_state[self.name][state_name]
+
+            for condition, description in self.state_descriptions[state_name].items():
+
+               # if boolean, direct comparison
+               if isinstance(condition, bool):
+                  if state_value == condition:
+                     return description
+               
+               # if condition is a string (e.g, ">2"), evaluate it dynamically
+               elif isinstance(condition, str):
+                  # construct the comparison
+                  expression = f'{state_value}{condition}'
+                  if eval(expression):
+                     return description
+      return ""
+
+
+   
+
 
    def getStatefulDescription(self):
       """
@@ -163,18 +220,22 @@ class Room:
          description (string): 
             can include {} formatted references to RoomObjects in the Room. e.g. "You are standing at the foot of your {bed.link}."
          roomObjects (dict):
-            weirdly and annoying this is a dict in the form of:
+            Weirdly and annoying for templating purposes, this is a dict in the form of:
             {'bed': bed}
-            where bed is a roomObject and 'bed' is however you are referring to it in the description
+            where bed is the roomObject and 'bed' is however you are referring to it in the description.
       """
       self.name = name
+      self.slug = slugify(name)
       self.description = description
       self.roomObjects = roomObjects
       self.connections = connections if connections else {}
 
+
    def getDescription(self):
-      # Format the description, replacing placeholders with object links
-      return self.description.format(**(self.roomObjects or {}))
+      """
+      Capable of executing roomObject methods.
+      """
+      return fstr(self.description, self.roomObjects)
 
    def connectRoom(self, direction, room, requirement=None):
       """

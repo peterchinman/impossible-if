@@ -1,16 +1,14 @@
-
-
 from cs50 import SQL
 from datetime import datetime, timedelta
 from flask import Flask, flash, make_response, redirect, render_template, request, session, url_for
 from flask_session import Session
-from helpers import encode_state, decode_state
-from slugify import slugify
+from game_machinery import player
+from game_map import *
 
 
 # Configure application
 app = Flask(__name__)
-app.secret_key = 'c0f9c9533444660bd9686d841d59c4a6fe3dc8b849fc03da8647587bd3e2681a' # REPLACE THIS
+app.secret_key = 'asdfghjk' # REPLACE THIS
 app.config['TEMPLATES_AUTO_RELOAD'] = True # turn off for production
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0 # set higher for production
 if (__name__ == "__main__"):
@@ -23,15 +21,15 @@ app.config["SESSION_PERMANENT"] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 Session(app)
 
-
-
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///impossible.db")
 
 
 @app.after_request
 def after_request(response):
-    """Ensure responses aren't cached"""
+    """
+    Ensure responses aren't cached
+    """
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
@@ -39,49 +37,59 @@ def after_request(response):
 
 
 @app.route("/", methods=["GET"])
-def game():
-    # get state
+def index():
+    # if we're here we are visiting for the first time
 
-    session.setdefault('GAME_STATE', {})
+    # click a button to start a game
 
-    # update state
-
-    # render
+    # 
     
+    return render_template('index.html')
 
-    return render_template(room + '.html')
-    
+@app.route("/new_game", methods=["GET"])
+def new_game():
 
-@app.route("/stuff/<stuff_slug>", methods=["GET"])
-def object(stuff_slug):
+    # initialize player
 
-    # How do I get specific object now
-    # specific_object = objects[object_slug]
+    player.initialize(bedroom)
+    session['game_state'] = player.game_state
 
-    # TODO update state
+    # redirect to first room
+
+    return redirect(url_for('room', room_slug=session['game_state']['current_room'].slug))
 
 
-    return render_template ("object.html", object=specific_object)
+@app.route("/room/<room_slug>", methods=["GET"])
+def room(room_slug):
+
+    # update current_room
+
+    current_room = bedroom
+
+    # check events
+
+    # check player alerts
+
+    # prepare for rendering
+
+    return render_template("room.html", bedroom=bedroom)
+
+
+@app.route("/object/<object_slug>", methods=["GET"])
+def object(object_slug):
+
+
+    for object_name, object_object in bedroom.roomObjects.items():
+        if object_name == object_slug:
+            return render_template("object.html", roomObject=object_object)
+    return ""
+
+
+
+
 
 @app.route("/stuff/<stuff_slug>/<action_slug>", methods=["GET"])
 def action(object_slug, action_slug):
-
-    # encoded_state = request.args.get('state')
-    # if encoded_state:
-    #     state = decode_state(encoded_state)
-    # else:
-    #     return render_template('error.html')
-
-    # action = objects[object_slug]['actions'][action_slug]
-    # object = objects[object_slug]
-
-    # if 'causes' in action:
-    #     for object_name, state_changes in action['causes'].items():
-    #         for state_change_name, state_change_value in state_changes.items():
-    #             state[object_name][state_change_name] = state_change_value
-            
-
-    # encoded_state = encode_state(state)
 
     return render_template("object.html", action=action, object=object)
 

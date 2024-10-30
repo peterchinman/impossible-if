@@ -3,3 +3,6 @@ __pycache__/
 .venv/
 /game.md
 /impossible.db
+.pytest_cache/
+flask_session/
+

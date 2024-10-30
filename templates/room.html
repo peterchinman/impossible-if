@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+{{ room_slug }}
+{% endblock %}
+
+{% block main %}
+<h1><a href="/room/bedroom" class="place">Bedroom</a></h1>
+{# TODO Set up hx-oob on this div so that the state can be updated when necessary #}
+<div id="room-description">
+
+{{ bedroom.getDescription()|safe }}
+  
+</div>
+<div id="action">
+</div>
+<div id="inspect">
+</div>
+
+
+
+
+{% endblock %}
