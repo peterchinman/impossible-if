@@ -1,7 +1,11 @@
-<h2>{{ roomObject.name }}</h2>
+<h2 class="object-name">{{ roomObject.name }}</h2>
 
-<p class="description">{{ roomObject.getStatefulDescription() }}</p>
-<ul class="object-actions">
+{% set statefulDescriptions = roomObject.getStatefulDescription() %}
+{% for description in statefulDescriptions %}
+<p class="object-description">{{ description|safe }}</p>
+{% endfor %}
+
+{# <ul class="object-actions">
    {% for action in roomObject.actions %}
       {% if action.checkRequirements() %}
          <li>
@@ -13,4 +17,7 @@
          </li>
       {% endif %}
    {% endfor %}
-</ul>
+</ul> #}
+<p class="alert">Your bed is neatly made. The corners are all tucked tight.</p>
+
+<a href="" class="action">Look Under Bed</a>

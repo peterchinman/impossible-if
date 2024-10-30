@@ -5,4 +5,3 @@ __pycache__/
 /impossible.db
 .pytest_cache/
 flask_session/
-

@@ -76,6 +76,6 @@ knife = RoomObject(
 
 bedroom = Room(
    "Bedroom",
-   "<p>You are standing at the foot of {objects['your-bed'].getLink('your bed')}.</p><p>Beside the bed is a {objects['bedside_table'].getLink('bedside table')}. On the table there is {objects['tarot_cards'].getLink('a deck of tarot cards')}, {objects['lamp'].getLink('a lamp')}, {objects['mouthguard'].getLink('a mouthgard')}, and {objects['knife'].getLink('a knife')}.</p><p>To your left are a set of {objects['sliding-doors'].getLink('sliding doors')}. {objects['sliding-doors'].getStateDescription('open')}</p>",
+   "<p>You are standing at the foot of {self.roomObjects['your-bed'].getLink('your bed')}.</p><p>Beside the bed is a {self.roomObjects['bedside_table'].getLink('bedside table')}. On the table there is {self.roomObjects['tarot_cards'].getLink('a deck of tarot cards')}, {self.roomObjects['lamp'].getLink('a lamp')}, {self.roomObjects['mouthguard'].getLink('a mouthgard')}, and {self.roomObjects['knife'].getLink('a knife')}.</p><p>To your left are a set of {self.roomObjects['sliding-doors'].getLink('sliding doors')}. {self.roomObjects['sliding-doors'].getStateDescription('open')}</p>",
    {'your-bed': bed, 'bedside_table': bedside_table, 'tarot_cards': tarot_cards, 'lamp': lamp, 'mouthguard': mouthguard, 'sliding-doors': sliding_doors, 'knife': knife}
 )

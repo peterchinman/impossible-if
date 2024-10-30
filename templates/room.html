@@ -5,17 +5,30 @@
 {% endblock %}
 
 {% block main %}
-<h1><a href="/room/bedroom" class="place">Bedroom</a></h1>
-{# TODO Set up hx-oob on this div so that the state can be updated when necessary #}
-<div id="room-description">
+{# TODO need to implement room.getLink #}
+<section class="room">
+   <h1 class="room-name">{{ room.getLink(room.name)|safe }}</h1>
+   
+   {% if alerts %}
+   <div id="alerts">
+      {% for alert in alerts %}
+      <p class="alert">{{ alert }}</p>
+      {% endfor %}
+   </div>
+   {% endif %}
+   
+   <div id="room-description">
+      {{ room.getDescription()|safe }}
+   </div>
+</section>
 
-{{ bedroom.getDescription()|safe }}
-  
-</div>
 <div id="action">
+{# TODO implement room,actios #}
 </div>
 <div id="inspect">
 </div>
+
+{# TODO it would be cool to render a "navigation" pane that contained all the Rooms connceted to this room #}
 
 
 

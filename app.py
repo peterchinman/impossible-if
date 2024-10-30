@@ -38,11 +38,7 @@ def after_request(response):
 
 @app.route("/", methods=["GET"])
 def index():
-    # if we're here we are visiting for the first time
-
-    # click a button to start a game
-
-    # 
+    # Home page, right now consists of a link to /new_game
     
     return render_template('index.html')
 
@@ -50,47 +46,64 @@ def index():
 def new_game():
 
     # initialize player
-
     player.initialize(bedroom)
+
+    # save to session
     session['game_state'] = player.game_state
 
-    # redirect to first room
+    room = player.game_state['current_room']
 
-    return redirect(url_for('room', room_slug=session['game_state']['current_room'].slug))
+    # redirect to first room
+    return redirect(url_for('room', room_slug=room.slug))
 
 
 @app.route("/room/<room_slug>", methods=["GET"])
 def room(room_slug):
 
-    # update current_room
+    # load player from session
+    player.game_state = session['game_state']
 
-    current_room = bedroom
+    room = player.game_state['current_room']
 
     # check events
+    # TODO implement events
 
-    # check player alerts
+    # pop player alerts
+    alerts = player.getAlerts()
 
-    # prepare for rendering
+    return render_template("room.html", alerts=alerts, room=room)
 
-    return render_template("room.html", bedroom=bedroom)
+@app.route("/room/<room_slug>/move-to/<to_slug>", methods=["GET"])
+def move_to(room_slug, to_slug):
+    pass
+    # check if move to to_slug is valid
+
+    # if yes redirect to /room/<to_slug>
+
+    # if no, send back to /room/room_slug
+    # w/ possible alert?
 
 
 @app.route("/object/<object_slug>", methods=["GET"])
 def object(object_slug):
+    # HTMX OBJECT INSPECTION LOADER
+
+    # load player from session
+    player.game_state = session['game_state']
+
+    room = player.game_state['current_room']
+
+    if object_slug in room.roomObjects:
+        roomObject = room.roomObjects[object_slug]
+        return render_template("object.html", roomObject=roomObject)
+    else:
+        return ""
 
 
-    for object_name, object_object in bedroom.roomObjects.items():
-        if object_name == object_slug:
-            return render_template("object.html", roomObject=object_object)
-    return ""
-
-
-
-
-
-@app.route("/stuff/<stuff_slug>/<action_slug>", methods=["GET"])
+@app.route("/object/<object_slug>/action/<action_slug>", methods=["GET"])
 def action(object_slug, action_slug):
+    pass
 
-    return render_template("object.html", action=action, object=object)
+
 
 

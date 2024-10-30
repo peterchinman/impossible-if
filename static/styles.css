@@ -21,7 +21,10 @@
 
 main {
 	padding: 1rem;
+	background-color: var(--neutral-20);
+	min-height: 100vh;
 }
+
 
 inner-column {
 	max-width: 600px;
@@ -36,16 +39,54 @@ inner-column {
 	}
 }
 
+.room {
+	margin: 1rem;
+}
+
+
+
 #inspect, #action {
 	display: none;
 	border: 1px solid black;
-	padding: 1rem;
 	margin-top: 2rem;
 }
 
 #inspect:has(> *), #action:has(> *) {
-	display: block
+	display: block;
 }
+
+#inspect {
+	padding-block: 2rem;
+	background-color: var(--neutral-0);
+	/* animation: split .5s ease-out; */
+
+	.object-name, .object-description, .action, .alert {
+		/* opacity: 0; */
+		padding: .5rem;
+		margin-inline: .5rem;
+		/* animation: fade-in 1s forwards; */
+	}
+}
+
+@keyframes fade-in {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+ }
+
+
+ 
+@keyframes split {
+	0% {
+		transform: scaleY(0);
+	}
+	100% {
+		transform: scaleY(1);
+	}
+ }
 
 .object-actions {
 	text-transform: capitalize;
@@ -53,9 +94,14 @@ inner-column {
 
 /* TYPOGRAPHY */
 
-h1 {
+.room-name {
 	font-size: 3rem;
 	padding-bottom: 2rem;
+	width: fit-content;
+
+	a:hover {
+		background-color: reset;
+	}
 }
 h2 {
 	font-size: 2rem;
@@ -73,5 +119,17 @@ p a, li a {
 	/* padding: 0px 4px; */
 	/* text-decoration: none; */
 	/* background-color: var(--neutral-50); */
+}
+a {
+	transition: all .3s;
+}
+a:hover {
+	/* transform: scale(1.1); */
+	background-color: var(--neutral-50);
+	/* padding: 1rem; */
+}
+
+.action {
+	width: fit-content
 }
 

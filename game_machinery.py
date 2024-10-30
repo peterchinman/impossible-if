@@ -1,6 +1,5 @@
 from slugify import slugify
 from player import Player
-from helpers import fstr
 
 player = Player()
 
@@ -138,6 +137,7 @@ class RoomObject:
       hx-get="{{ url_for('object', object_slug='sliding_door', state=encoded_state) }}"
    hx-target="#inspect"
       """
+      # TODO this probably isn't the actual link we want??
       return f"""<a href='/object/{self.slug}'
                   hx-get='/object/{self.slug}'
                   hx-target='#inspect'>{string}</a>"""
@@ -186,7 +186,7 @@ class RoomObject:
 
       if self.state_descriptions:
          for state_name, condition_and_description in self.state_descriptions.items():
-            if state_name in player.game_state[self.name]:
+            if self.name in player.game_state and state_name in player.game_state[self.name]:
                for condition, description in condition_and_description.items():
                   state_value = player.game_state[self.name][state_name]
 
@@ -233,9 +233,19 @@ class Room:
 
    def getDescription(self):
       """
-      Capable of executing roomObject methods.
+      Incredibly simple single line of code that make the templating description system possible. Allows for "delayed templating", i.e. write the template into the description and then evaluate it later when you need to. Which yes is inherently dangerous in that this will execute ANY PYTHON CODE that you put into the description. SO... TODO: protect against that. Do not go live online with addressing this!!!!
+      
+      Example of usage: 
+      ```
+      template_a = "You are standing at the foot of {self.roomObjects['my_bed'].getLink('your bed')}."
+
+      getDescription(template_a)
+      # You are standing at the foot of <a href='object/your-bed'>your bed</a>.
+      ```
+
+      Idea taken from user "kadee" on stackoverflow https://stackoverflow.com/a/53671539/25549425
       """
-      return fstr(self.description, self.roomObjects)
+      return eval(f'f"""{self.description}"""')
 
    def connectRoom(self, direction, room, requirement=None):
       """
@@ -259,6 +269,14 @@ class Room:
                   if player.game_state[requirement_object][state_name] == state_value:
                      return connection['room']
       return None
+
+   def getLink(self, string = None):
+      """
+      Args:
+         string (string): gets wrapped in the link
+      """
+      return f"""<a href='/room/{self.slug}'>{string or self.name}</a>"""
+      return
 
 
 

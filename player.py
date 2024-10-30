@@ -6,6 +6,7 @@ class Player:
       2. {'inventory' : {'key': True, 'matches': 6}}
       3. {'RoomObject.name': {state_name: state_value}}
       4. {'Room.name': {state_name: state_value}}
+      5. {'alerts' : ["list", "of", "alerts"]}
       """
       self.game_state = {}
       self.game_state['current_room'] = start_Room
@@ -24,11 +25,13 @@ class Player:
             self.game_state['alerts'].append("You try the handle but the door is locked.")
 
    # start fresh, set current room
-   def initialize(self, start_Room):
+   def initialize(self, start_Room = "bedroom"):
+      # reset everything
       self.game_state = {}
-      self.game_state['current_room'] = start_Room or "bedroom"
+      self.game_state['current_room'] = start_Room
       self.game_state['inventory'] = []
       self.game_state['alerts'] = []
+
 
    def describeRoom(self):
       return self.game_state['current_room'].getDescription()
